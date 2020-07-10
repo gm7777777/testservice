@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.test.service1.mapper.URLInfoMapper">
+    <!-- 根据主键查询-->
+    <insert id="insertInfo"  parameterType="com.test.service1.info.ConvertURLInfo" >
+ INSERT INTO t_convert_url(id,url_str,comment,shorten_url) VALUES (#{id},#{urlStr},#{comment},#{shrotenURL})
+    </insert>
+
+    <update id="updateInfo"  parameterType="com.test.service1.info.ConvertURLInfo" >
+        update t_convert_url set url_str=#{urlStr},comment=#{comment},shorten_url=#{shrotenURL} where id=#{id}
+    </update>
+</mapper>
