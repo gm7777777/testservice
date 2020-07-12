@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 //@MapperScan
 @Repository
 @Mapper
@@ -18,5 +20,6 @@ public interface URLInfoMapper {
 //    @Update("update t_convert_url set url_str=#{urlStr},comment=#{comment},shorten_url=#{shrotenURL} where id=#{id}")
     int updateInfo(ConvertURLInfo info);
 
+    List<ConvertURLInfo> selectById(String id);
 
 }

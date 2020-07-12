@@ -17,4 +17,8 @@ public class URLServ {
     public int update(ConvertURLInfo info){
         return urlInfoMapper.updateInfo(info);
     }
+
+    public ConvertURLInfo selectById(String Id){
+        return urlInfoMapper.selectById(Id).get(0);
+    }
 }

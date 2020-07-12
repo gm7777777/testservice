@@ -7,6 +7,7 @@ import com.test.service1.util.MD5ConvertUtil;
 import com.test.service1.util.UUIDGenerator;
 import com.test.service1.vo.ConvertURLVO;
 import com.test.service1.service.URLServ;
+import com.test.service1.vo.RecordURLVO;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,30 +20,34 @@ public class URLController {
     @Autowired
     private URLServ urlServ;
 
-    @ApiOperation(value = "based on param's url created shorten url", notes = "", response = String.class, tags={ "convertURL", })
+    @ApiOperation(value = "based on param's url created shorten url : {\n" +
+            "\t\"id\":\"\",\n" +
+            "\t\"urlStr\":\"http://www.google.com\",\n" +
+            "\t\"comment\":\"1\"\n" +
+            "}", notes = "", response = String.class, tags = {"convertURL",})
 
     //这里是显示你可能返回的http状态，以及原因。比如404 not found, 303 see other
     @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Invalid input", response = String.class) })
+            @ApiResponse(code = 405, message = "Invalid input", response = String.class)})
 
     /**
      * jsonStr 包括 id,urltr,comment,
      */
-    @RequestMapping(value="/getShortenURL",method= RequestMethod.POST)
-    public String convertURL(@RequestBody @ApiParam(value = "json paramter inlcude id ,urlStr , comment ,shortenURL", required = true)   String jsonStr) {
+    @RequestMapping(value = "/getShortenURL", method = RequestMethod.POST)
+    public String convertURL(@RequestBody @ApiParam(value = "json paramter inlcude id ,urlStr , comment ,shortenURL", required = true) String jsonStr) {
 
         ConvertURLVO vo = JSON.parseObject(jsonStr, ConvertURLVO.class);
 
         String key = "GM";                 //自定义生成MD5加密字符串前的混合KEY
         String[] chars = new String[]{          //要使用生成URL的字符
-                "a","b","c","d","e","f","g","h",
-                "i","j","k","l","m","n","o","p",
-                "q","r","s","t","u","v","w","x",
-                "y","z","0","1","2","3","4","5",
-                "6","7","8","9","A","B","C","D",
-                "E","F","G","H","I","J","K","L",
-                "M","N","O","P","Q","R","S","T",
-                "U","V","W","X","Y","Z"
+                "a", "b", "c", "d", "e", "f", "g", "h",
+                "i", "j", "k", "l", "m", "n", "o", "p",
+                "q", "r", "s", "t", "u", "v", "w", "x",
+                "y", "z", "0", "1", "2", "3", "4", "5",
+                "6", "7", "8", "9", "A", "B", "C", "D",
+                "E", "F", "G", "H", "I", "J", "K", "L",
+                "M", "N", "O", "P", "Q", "R", "S", "T",
+                "U", "V", "W", "X", "Y", "Z"
         };
 
         String hex = MD5ConvertUtil.MD5Encode(key + vo.getUrlStr());
@@ -64,29 +69,50 @@ public class URLController {
             ShortStr[i] = outChars;
         }
         String voId = null;
-        String shortUrl = "http://tiny.amazon.com/"+ShortStr[0].toString();
+        String shortUrl = "http://tiny.amazon.com/" + ShortStr[0].toString();
         ConvertURLInfo info = new ConvertURLInfo();
         voId = vo.getId();
         info.setId(voId);
         info.setComment(vo.getComment());
         info.setUrlStr(vo.getUrlStr());
         info.setShrotenURL(shortUrl);
-        int index=-1;
-        if(vo.getId()!=null&&!"".equals(vo.getId())){
+        int index = -1;
+        if (vo.getId() != null && !"".equals(vo.getId())) {
             index = urlServ.update(info);
-        }else{
+        } else {
             voId = UUIDGenerator.getUUID();
             info.setId(voId);
             vo.setId(voId);
             index = urlServ.insert(info);
         }
 //        index = 1;
-        if(index>0){
+        if (index > 0) {
             System.out.println(" Opreating Successfully!");
 //            vo.setId(voId);
             vo.setShortenURL(shortUrl);
         }
-            return JSON.toJSONString(vo);
-        }
-
+        return JSON.toJSONString(vo);
     }
+
+
+    @ApiOperation(value = "based on unique ID get record URL : {\"idStr\":\"1\"}", notes = "", response = String.class, tags = {"recordURL",})
+
+    //这里是显示你可能返回的http状态，以及原因。比如404 not found, 303 see other
+    @ApiResponses(value = {
+            @ApiResponse(code = 405, message = "Invalid input", response = String.class)})
+
+
+
+    @RequestMapping(value="/getRecord",method= RequestMethod.POST)
+    public String getURL(@RequestBody @ApiParam(value = "get record URL ", required = true)   String jsonStr) {
+        RecordURLVO vo = JSON.parseObject(jsonStr, RecordURLVO.class);
+        String id = vo.getIdStr();
+        ConvertURLInfo info= urlServ.selectById(id);
+        RecordURLVO urlvo = new RecordURLVO();
+        urlvo.setIdStr(info.getId());
+        urlvo.setComment(info.getComment());
+        urlvo.setUrlStr(info.getUrlStr());
+        urlvo.setTinyURL(info.getShrotenURL());
+        return JSON.toJSONString(urlvo);
+    }
+}

@@ -7,6 +7,10 @@
     </insert>
 
     <update id="updateInfo"  parameterType="com.test.service1.info.ConvertURLInfo" >
-        update t_convert_url set url_str=#{urlStr},comment=#{comment},shorten_url=#{shrotenURL} where id=#{id}
-    </update>
+    update t_convert_url set url_str=#{urlStr},comment=#{comment},shorten_url=#{shrotenURL} where id=#{id}
+</update>
+
+    <select id="selectById"  resultType="com.test.service1.info.ConvertURLInfo" parameterType="String" >
+        select id as id , url_str as urlStr , comment as comment ,shorten_url as shrotenURL from t_convert_url where id=#{id}
+    </select>
 </mapper>
